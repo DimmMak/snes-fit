@@ -15,9 +15,11 @@ from typing import List
 from dimensions._plugin_base import DimensionPlugin, Finding
 
 
+_SYS_ARGV_RE = re.compile(r"sys\.argv\[\s*[1-9]")
+_LEN_GUARD_RE = re.compile(r"len\s*\(\s*sys\.argv\s*\)")
+_ARGPARSE_RE = re.compile(r"\b(argparse|ArgumentParser)\b")
+
 HOSTILE_PATTERNS = [
-    # unguarded sys.argv indexing (IndexError waiting to happen)
-    (re.compile(r"sys\.argv\[\s*[1-9]"), "unguarded sys.argv indexing", "minor"),
     # bare except eats adversarial info
     (re.compile(r"^\s*except\s*:\s*$", re.MULTILINE), "bare except clause", "minor"),
     # eval/exec on untrusted input
@@ -28,7 +30,7 @@ HOSTILE_PATTERNS = [
 
 class AdversarialPlugin(DimensionPlugin):
     name = "01_adversarial"
-    version = "0.1.0"
+    version = "0.1.1"
     runs_on = "skill"
 
     def probe(self, target) -> List[Finding]:
@@ -47,6 +49,22 @@ class AdversarialPlugin(DimensionPlugin):
                         text = fh.read()
                 except OSError:
                     continue
+
+                # sys.argv check: only flag if there's NO guard in the file.
+                # Guards count: len(sys.argv) comparison, or argparse usage.
+                file_has_guard = bool(
+                    _LEN_GUARD_RE.search(text) or _ARGPARSE_RE.search(text)
+                )
+                if not file_has_guard:
+                    for m in _SYS_ARGV_RE.finditer(text):
+                        findings.append(Finding(
+                            dimension=self.name,
+                            severity="minor",
+                            message="unguarded sys.argv indexing (no len-check or argparse)",
+                            evidence="{}:{}".format(full, _line_of(text, m.start())),
+                        ))
+
+                # Other hostile patterns: always flag.
                 for rx, msg, sev in HOSTILE_PATTERNS:
                     for m in rx.finditer(text):
                         findings.append(Finding(

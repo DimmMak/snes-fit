@@ -66,6 +66,49 @@ class TestDecayTracker(unittest.TestCase):
         findings = decay_tracker.load_findings(self.vault)
         self.assertEqual(len(findings), 1)
 
+    def test_next_round_id_empty(self) -> None:
+        self.assertEqual(decay_tracker.next_round_id({}), 1)
+
+    def test_next_round_id_increments(self) -> None:
+        self._add(1, "major")
+        self._add(1, "minor")
+        self._add(2, "cosmetic")
+        groups = decay_tracker.group_by_round(decay_tracker.load_findings(self.vault))
+        self.assertEqual(decay_tracker.next_round_id(groups), 3)
+
+    def test_summarize_rounds_flags_dirty_and_clean(self) -> None:
+        self._add(1, "major")
+        self._add(1, "minor")
+        self._add(2, "informational")  # round marker only
+        self._add(3, "cosmetic")
+        groups = decay_tracker.group_by_round(decay_tracker.load_findings(self.vault))
+        summaries = decay_tracker.summarize_rounds(groups)
+        self.assertEqual([s.round for s in summaries], [1, 2, 3])
+        self.assertFalse(summaries[0].clean)  # major -> dirty
+        self.assertTrue(summaries[1].clean)   # only a marker
+        self.assertTrue(summaries[2].clean)   # 1 cosmetic is allowed
+        self.assertEqual(summaries[0].structural, 1)
+        self.assertEqual(summaries[1].markers, 1)
+        self.assertEqual(summaries[2].cosmetic, 1)
+
+    def test_clean_streak_counts_trailing_only(self) -> None:
+        # dirty, clean, clean -> streak 2
+        self._add(1, "major")
+        self._add(2, "cosmetic")
+        self._add(3, "informational")
+        groups = decay_tracker.group_by_round(decay_tracker.load_findings(self.vault))
+        summaries = decay_tracker.summarize_rounds(groups)
+        self.assertEqual(decay_tracker.clean_streak(summaries), 2)
+
+    def test_clean_streak_resets_on_dirty_tail(self) -> None:
+        # clean, clean, dirty -> streak 0
+        self._add(1, "cosmetic")
+        self._add(2, "informational")
+        self._add(3, "critical")
+        groups = decay_tracker.group_by_round(decay_tracker.load_findings(self.vault))
+        summaries = decay_tracker.summarize_rounds(groups)
+        self.assertEqual(decay_tracker.clean_streak(summaries), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

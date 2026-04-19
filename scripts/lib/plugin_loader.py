@@ -30,6 +30,7 @@ def discover_plugins(dimensions_dir: Optional[str] = None,
     if dimensions_dir is None:
         dimensions_dir = os.path.join(_AUTO_TEST_ROOT, "dimensions")
     plugins: List[DimensionPlugin] = []
+    seen_names: set = set()
     if not os.path.isdir(dimensions_dir):
         return plugins
 
@@ -58,7 +59,16 @@ def discover_plugins(dimensions_dir: Optional[str] = None,
                 continue
             if issubclass(obj, DimensionPlugin) and not inspect.isabstract(obj):
                 try:
-                    plugins.append(obj())
+                    instance = obj()
                 except Exception:
                     continue
+                pname = getattr(instance, "name", "") or entry
+                if pname in seen_names:
+                    sys.stderr.write(
+                        "auto-test: plugin name collision: {!r} already loaded; "
+                        "skipping duplicate from {}\n".format(pname, entry)
+                    )
+                    continue
+                seen_names.add(pname)
+                plugins.append(instance)
     return plugins

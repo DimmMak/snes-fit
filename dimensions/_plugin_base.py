@@ -54,12 +54,17 @@ class DimensionPlugin(ABC):
         raise NotImplementedError
 
     def score(self, findings: List[Finding]) -> float:
-        """Default scoring: critical -> 0.0; -0.2 per major; -0.05 per minor."""
+        """Default scoring: critical -> 0.0; -0.2/major; -0.05/minor; -0.01/cosmetic.
+
+        Cosmetic is non-zero so the scorecard grade stays aligned with the
+        decay rule, which treats cosmetic findings as ship-gate signal.
+        """
         if any(f.severity == "critical" for f in findings):
             return 0.0
         major = sum(1 for f in findings if f.severity == "major")
         minor = sum(1 for f in findings if f.severity == "minor")
-        return max(0.0, 1.0 - (major * 0.2) - (minor * 0.05))
+        cosmetic = sum(1 for f in findings if f.severity == "cosmetic")
+        return max(0.0, 1.0 - (major * 0.2) - (minor * 0.05) - (cosmetic * 0.01))
 
     def regression_tests(self) -> List[dict]:
         """Optional: regression tests to pin in the vault."""

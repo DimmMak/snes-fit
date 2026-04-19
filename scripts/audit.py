@@ -41,10 +41,15 @@ def _load_thresholds() -> dict:
 
 def run_audit(skill_name: str,
               fleet_root: str = DEFAULT_FLEET_ROOT,
-              round_num: int = 1,
+              round_num: Optional[int] = None,
               dimensions_filter: Optional[List[str]] = None,
               write_vault: bool = True,
               write_report: bool = True) -> dict:
+    """Run one audit round.
+
+    round_num=None means auto-increment (recommended). An explicit integer
+    overrides and is only useful for tests or replaying a specific round.
+    """
     cfg = _load_config()
     thresholds = _load_thresholds()
     dim_entries = cfg.get("dimensions", [])
@@ -66,6 +71,15 @@ def run_audit(skill_name: str,
     if skill is None:
         raise SystemExit("Skill not found: {} (under {})".format(skill_name, fleet_root))
     plugins = discover_plugins(enabled_ids=enabled_ids)
+
+    # Auto-increment round if not explicitly set. Prevents the "every run is
+    # round 1" bug where re-audits stacked markers under the same round id.
+    vault_dir = os.path.join(_ROOT, "vault", skill_name)
+    if round_num is None:
+        existing = decay_tracker.load_findings(vault_dir)
+        round_num = decay_tracker.next_round_id(
+            decay_tracker.group_by_round(existing)
+        )
 
     results: List[DimensionResult] = []
     for plugin in plugins:
@@ -90,7 +104,6 @@ def run_audit(skill_name: str,
     letter = scorecard.grade(total_score)
 
     # Write findings to vault
-    vault_dir = os.path.join(_ROOT, "vault", skill_name)
     if write_vault:
         for r in results:
             for f in r.findings:
@@ -123,15 +136,20 @@ def run_audit(skill_name: str,
     # Decay read-back
     found = decay_tracker.load_findings(vault_dir)
     by_round = decay_tracker.group_by_round(found)
-    curve = decay_tracker.decay_curve(by_round)
-    ship_ready = decay_tracker.is_ship_ready(
-        by_round, zero_rounds_required=int(thresholds.get("decay_zero_rounds", 2)),
-    ) and total_score >= int(thresholds.get("ship_score_threshold", 80))
+    summaries = decay_tracker.summarize_rounds(by_round)
+    streak = decay_tracker.clean_streak(summaries)
+    zero_rounds_required = int(thresholds.get("decay_zero_rounds", 2))
+    ship_ready = (
+        streak >= zero_rounds_required
+        and total_score >= int(thresholds.get("ship_score_threshold", 80))
+    )
 
     # Render report
     md = report_renderer.render_scorecard(
         skill=skill_name, results=results,
-        decay_curve=curve, score=total_score, grade=letter,
+        round_summaries=summaries, clean_streak=streak,
+        zero_rounds_required=zero_rounds_required,
+        score=total_score, grade=letter,
         ship_ready=ship_ready,
     )
     if write_report:
@@ -179,7 +197,8 @@ def _now_iso() -> str:
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description=".auto-test audit — run all enabled dims on one skill")
     ap.add_argument("--skill", required=True, help="skill name (directory under fleet root)")
-    ap.add_argument("--round", type=int, default=1, help="decay-tracker round number")
+    ap.add_argument("--round", type=int, default=None,
+                    help="decay-tracker round number (default: auto-increment)")
     ap.add_argument("--dimensions", default="", help="comma-separated dimension id filter")
     ap.add_argument("--fleet-root", default=DEFAULT_FLEET_ROOT)
     ap.add_argument("--no-vault", action="store_true", help="skip writing to vault")

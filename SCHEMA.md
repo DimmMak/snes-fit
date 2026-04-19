@@ -158,11 +158,11 @@ Human-readable markdown scorecard. Not machine-parsed — the vault is the canon
 
 Structure:
 
-1. Header: skill name, run timestamp, overall grade + score
+1. Header: skill name, run timestamp, overall grade + score, ship-ready verdict (yes/no)
 2. Per-dimension table (🟣 headers)
 3. Findings list grouped by severity
-4. Decay curve (bugs per round)
-5. Ship-ready verdict (yes/no)
+4. Rounds table — one row per round with explicit 🟢 CLEAN / 🔴 DIRTY verdict and structural/minor/cosmetic/marker columns
+5. Clean-streak + ship-gate summary line (e.g. "Clean streak: 5 rounds · Ship gate: 2 required · ✅ PASSED")
 
 ---
 

@@ -4,6 +4,33 @@ All notable changes to `.auto-test`.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## [0.2.1] — 2026-04-19
+
+### Fixed
+- **Cosmetic findings ignored by default scorer** (`dimensions/_plugin_base.py`) — now score `-0.01` each. Previously invisible to the scorecard grade while still counting toward the decay ship gate, producing 100/100 + "not ship-ready" contradictions.
+- **Plugin name collisions silently won by load order** (`scripts/lib/plugin_loader.py`) — duplicate `name` values now emit a stderr warning and the second instance is skipped.
+- **Judge cost-guard token estimate off ~2×** (`scripts/lib/judge.py`) — `len(text)//3` → `len(text)//4` to match Anthropic's documented English approximation.
+- **Round IDs never incremented across invocations** (`scripts/audit.py`, `audit_all.py`, `design_audit.py`) — every `--round`-less run stacked markers under round 1. CLI default changed `1 → None`; `decay_tracker.next_round_id()` now auto-increments from `max(existing) + 1`.
+- **Decay visualization was ambiguous** (`scripts/lib/report_renderer.py`) — replaced the compact sparkline + digit tuple (e.g. `7→1→0→1→1`) with a self-describing `## Rounds` table: one row per round, explicit 🟢 CLEAN / 🔴 DIRTY verdict, separate structural/minor/cosmetic/marker columns, and a plain-English streak + ship-gate line.
+
+### Added
+- `decay_tracker.summarize_rounds()` + `RoundSummary` dataclass (per-round structural/minor/cosmetic/marker counts, clean flag)
+- `decay_tracker.clean_streak()` — trailing consecutive clean-round counter
+- `decay_tracker.next_round_id()` — auto-increment helper
+- 9 regression tests (**66 total**):
+  - `tests/test_plugin_base_score.py` — cosmetic scoring + mixed-severity behaviour (7 tests)
+  - `tests/test_plugin_loader_collision.py` — collision warning + independent loads (2 tests)
+  - `tests/test_decay_tracker.py` — `next_round_id`, `summarize_rounds`, `clean_streak` (5 new tests)
+
+### Changed
+- `report_renderer.render_scorecard()` signature: `decay_curve` replaced with `round_summaries` + `clean_streak` + `zero_rounds_required`. Legacy `_decay_ascii` sparkline helper deleted.
+- `--round` CLI default `1 → None` across audit/audit_all/design_audit. Explicit integers still honored for tests and replays.
+
+### Notes
+Born from a session where the old sparkline was misread three turns in a row — the display was ambiguous, the JSONL vault was authoritative. Fix makes the display self-describing so the same misread can't happen again. Also pinned a `feedback_verify_before_quoting` rule in the memory repo.
+
+---
+
 ## [0.2.0] — 2026-04-19
 
 ### Added — phase 2: LLM-eval dimensions

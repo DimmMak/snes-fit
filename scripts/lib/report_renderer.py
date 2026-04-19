@@ -5,24 +5,14 @@ from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from dimensions._plugin_base import DimensionResult  # noqa: F401
-
-
-def _decay_ascii(curve: List[int]) -> str:
-    """Render the decay curve as a tiny ASCII sparkline."""
-    if not curve:
-        return "(no rounds recorded)"
-    bars = "▁▂▃▄▅▆▇█"
-    peak = max(curve) or 1
-    out = []
-    for v in curve:
-        idx = min(len(bars) - 1, int(round((v / peak) * (len(bars) - 1))))
-        out.append(bars[idx])
-    return "".join(out) + "  (" + " ".join(str(v) for v in curve) + ")"
+    from scripts.lib.decay_tracker import RoundSummary  # noqa: F401
 
 
 def render_scorecard(skill: str,
                      results: List["DimensionResult"],
-                     decay_curve: List[int],
+                     round_summaries: List["RoundSummary"],
+                     clean_streak: int,
+                     zero_rounds_required: int,
                      score: int,
                      grade: str,
                      ship_ready: Optional[bool] = None) -> str:
@@ -47,7 +37,7 @@ def render_scorecard(skill: str,
         ))
     lines.append("")
 
-    # Findings, grouped by severity
+    # Findings, grouped by severity (informational markers excluded from this view)
     lines.append("## Findings")
     lines.append("")
     severities = ("critical", "major", "minor", "cosmetic")
@@ -72,12 +62,31 @@ def render_scorecard(skill: str,
                 lines.append("| {} | {} | {} |".format(f.dimension, msg, ev))
             lines.append("")
 
-    # Decay curve
-    lines.append("## Decay curve")
+    # Rounds — self-describing; replaces the old ambiguous sparkline.
+    # Each row states its own verdict so no reader can misread a count as a round.
+    lines.append("## Rounds")
     lines.append("")
-    lines.append("```")
-    lines.append(_decay_ascii(decay_curve))
-    lines.append("```")
-    lines.append("")
+    if not round_summaries:
+        lines.append("_No rounds recorded._")
+        lines.append("")
+    else:
+        lines.append("| 🟣 Round | 🟣 Structural | 🟣 Minor | 🟣 Cosmetic | 🟣 Markers | 🟣 Verdict |")
+        lines.append("|---|---|---|---|---|---|")
+        for s in round_summaries:
+            verdict = "🟢 CLEAN" if s.clean else "🔴 DIRTY"
+            lines.append("| {} | {} | {} | {} | {} | {} |".format(
+                s.round, s.structural, s.minor, s.cosmetic, s.markers, verdict,
+            ))
+        lines.append("")
+        gate_met = "✅ PASSED" if clean_streak >= zero_rounds_required else "⏳ IN PROGRESS"
+        lines.append(
+            "**Clean streak (trailing):** {} round{} · **Ship gate:** {} required · {}".format(
+                clean_streak,
+                "" if clean_streak == 1 else "s",
+                zero_rounds_required,
+                gate_met,
+            )
+        )
+        lines.append("")
 
     return "\n".join(lines)

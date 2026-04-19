@@ -95,10 +95,19 @@ class DimensionPlugin(ABC):
 
 `scripts/lib/decay_tracker.py` reads `vault/<skill>/findings.jsonl`, groups findings by `round`, applies the stopping rule:
 
-- a round is **zero** if it has 0 structural + ≤1 cosmetic finding
-- ship when the last N rounds (default 2) are all zero
+- a round is **clean** if it has 0 structural + ≤1 cosmetic finding (informational markers don't count)
+- ship when `clean_streak()` ≥ N (default 2) AND the overall score clears `ship_score_threshold` (default 80)
 
-Rounds monotonically increase; never rewritten. The vault is the audit trail.
+Public helpers:
+
+| 🟣 Function | 🟣 Returns | 🟣 Used by |
+|---|---|---|
+| `summarize_rounds(by_round)` | `List[RoundSummary]` — per-round structural/minor/cosmetic/marker counts + clean flag | report renderer's `## Rounds` table |
+| `clean_streak(summaries)` | `int` trailing consecutive clean rounds | ship-ready check |
+| `next_round_id(by_round)` | `max(rounds) + 1` or `1` if empty | CLI auto-increment (prevents round-1 stacking) |
+| `is_ship_ready(by_round, N)` | legacy `bool` wrapper | tests, back-compat |
+
+Rounds monotonically increase; never rewritten. The vault is the audit trail. The renderer emits a self-describing per-round table (🟢 CLEAN / 🔴 DIRTY per row) — the compact sparkline used in 0.2.0 was deleted because aggregate counts were easy to misread as round counts.
 
 ---
 

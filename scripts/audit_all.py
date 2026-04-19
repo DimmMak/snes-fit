@@ -18,7 +18,8 @@ from scripts.lib import tree_walker  # noqa: E402
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description=".auto-test audit --all — fleet sweep")
     ap.add_argument("--fleet-root", default=DEFAULT_FLEET_ROOT)
-    ap.add_argument("--round", type=int, default=1)
+    ap.add_argument("--round", type=int, default=None,
+                    help="decay-tracker round number (default: auto-increment per skill)")
     ap.add_argument("--skip", default="", help="comma-separated skills to skip")
     args = ap.parse_args(argv)
 

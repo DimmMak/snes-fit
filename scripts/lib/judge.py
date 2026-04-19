@@ -81,8 +81,9 @@ def judge(
     generously (as if no cache hit) to stay conservative.
     """
     if cost_guard is not None:
-        # Conservative pre-estimate: treat full system + user as fresh input.
-        est_input = max(1, (len(judge_prompt) + len(user_content)) // 3)
+        # Pre-estimate: treat full system + user as fresh input.
+        # ~4 chars/token is Anthropic's documented English approximation.
+        est_input = max(1, (len(judge_prompt) + len(user_content)) // 4)
         est = estimate_cost_usd(model, est_input, max_tokens, 0)
         if not cost_guard.can_spend(est):
             return _unknown("cost budget exceeded before judge call")

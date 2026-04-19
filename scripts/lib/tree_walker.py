@@ -12,6 +12,56 @@ from typing import List, Optional
 
 CANONICAL_SUBDIRS = ("scripts", "config", "prompts", "tests", "dimensions", "logs")
 
+# Directories that should NEVER be scanned as skill content.
+# Vendored deps, build artifacts, VCS metadata, caches. Every file-walking
+# dimension plugin should call prune_excluded_dirs(dirnames) in its os.walk
+# loop to skip these.
+EXCLUDED_DIRS = frozenset({
+    # Python
+    "__pycache__", ".venv", "venv", "env", ".tox", ".pytest_cache",
+    ".mypy_cache", ".ruff_cache", "egg-info",
+    # JS / TS
+    "node_modules", ".next", ".nuxt", ".turbo", ".parcel-cache",
+    "bower_components",
+    # Build artifacts
+    "dist", "build", "target", "out", ".cache", ".gradle",
+    # VCS
+    ".git", ".hg", ".svn",
+    # IDE
+    ".idea", ".vscode", ".vs",
+    # OS
+    ".DS_Store",
+    # Archive dumps
+    "_archive", "_archive-2026-04-19",
+})
+
+# File suffixes that indicate generated/binary/minified content.
+EXCLUDED_FILE_SUFFIXES = (
+    ".min.js", ".min.css", ".map",
+    ".pyc", ".pyo",
+    ".so", ".dylib", ".dll",
+    ".class",
+    ".lock", "-lock.json", "-lock.yaml",  # package-lock.json, yarn.lock, uv.lock, etc.
+)
+
+
+def prune_excluded_dirs(dirnames: List[str]) -> None:
+    """Mutate dirnames IN PLACE to remove excluded + hidden dirs.
+
+    Call this inside every os.walk loop so walks don't descend into
+    node_modules, __pycache__, .git, etc.
+    """
+    dirnames[:] = [
+        d for d in dirnames
+        if d not in EXCLUDED_DIRS and not d.startswith(".")
+    ]
+
+
+def is_excluded_file(filename: str) -> bool:
+    """True if filename is a build/binary/lock artifact we should skip."""
+    lname = filename.lower()
+    return any(lname.endswith(suf) for suf in EXCLUDED_FILE_SUFFIXES)
+
 
 @dataclass
 class SkillInfo:
@@ -57,9 +107,10 @@ def _build_skill_info(name: str, path: str) -> SkillInfo:
     except OSError:
         pass
     for dirpath, dirnames, filenames in os.walk(path):
-        # prune hidden dirs
-        dirnames[:] = [d for d in dirnames if not d.startswith(".") and d != "__pycache__"]
+        prune_excluded_dirs(dirnames)
         for fn in filenames:
+            if is_excluded_file(fn):
+                continue
             file_count += 1
             try:
                 total_bytes += os.path.getsize(os.path.join(dirpath, fn))
@@ -101,7 +152,7 @@ def _max_depth(root: str) -> int:
     best = 0
     root_parts = os.path.normpath(root).count(os.sep)
     for dirpath, dirnames, _filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if not d.startswith(".") and d != "__pycache__"]
+        prune_excluded_dirs(dirnames)
         depth = os.path.normpath(dirpath).count(os.sep) - root_parts
         if depth > best:
             best = depth

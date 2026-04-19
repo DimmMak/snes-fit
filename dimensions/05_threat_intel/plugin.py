@@ -11,6 +11,7 @@ import os
 from typing import List
 
 from dimensions._plugin_base import DimensionPlugin, Finding
+from scripts.lib.tree_walker import prune_excluded_dirs, is_excluded_file
 
 
 # A compact homograph set — Latin letter : confusable Cyrillic codepoint.
@@ -34,8 +35,10 @@ class ThreatIntelPlugin(DimensionPlugin):
     def probe(self, target) -> List[Finding]:
         findings: List[Finding] = []
         for dirpath, dirnames, filenames in os.walk(target.path):
-            dirnames[:] = [d for d in dirnames if not d.startswith(".") and d != "__pycache__"]
+            prune_excluded_dirs(dirnames)
             for fn in filenames:
+                if is_excluded_file(fn):
+                    continue
                 if not fn.endswith(TEXT_EXTS):
                     continue
                 full = os.path.join(dirpath, fn)

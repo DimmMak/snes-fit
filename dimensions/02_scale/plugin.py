@@ -10,6 +10,7 @@ import time
 from typing import List
 
 from dimensions._plugin_base import DimensionPlugin, Finding
+from scripts.lib.tree_walker import prune_excluded_dirs, is_excluded_file
 
 
 MAX_FILES = 2000
@@ -43,8 +44,10 @@ class ScalePlugin(DimensionPlugin):
         t0 = time.perf_counter()
         biggest = ("", 0)
         for dirpath, dirnames, filenames in os.walk(target.path):
-            dirnames[:] = [d for d in dirnames if not d.startswith(".") and d != "__pycache__"]
+            prune_excluded_dirs(dirnames)
             for fn in filenames:
+                if is_excluded_file(fn):
+                    continue
                 full = os.path.join(dirpath, fn)
                 try:
                     sz = os.path.getsize(full)

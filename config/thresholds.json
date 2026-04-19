@@ -4,5 +4,6 @@
   "p0_max": 0,
   "decay_zero_rounds": 2,
   "max_parallel": 4,
-  "ship_score_threshold": 80
+  "ship_score_threshold": 80,
+  "max_cost_usd_per_run": 5.0
 }

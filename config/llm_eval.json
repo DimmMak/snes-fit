@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "max_cost_usd_per_run": 5.0,
+  "executor": {
+    "model": "claude-sonnet-4-5",
+    "temperature": 0.0,
+    "max_tokens": 1024
+  },
+  "judge": {
+    "model": "claude-haiku-4-5",
+    "temperature": 0.0,
+    "max_tokens": 512
+  },
+  "per_dimension": {
+    "09_llm_output_quality":  {"judge_model": "claude-haiku-4-5", "executor_model": "claude-sonnet-4-5"},
+    "10_trigger_precision":   {"judge_model": "claude-haiku-4-5", "executor_model": "claude-sonnet-4-5"},
+    "11_hallucination_probe": {"judge_model": "claude-haiku-4-5", "executor_model": "claude-sonnet-4-5"},
+    "12_prompt_injection":    {"judge_model": "claude-haiku-4-5", "executor_model": "claude-sonnet-4-5"},
+    "13_contract_drift":      {"judge_model": "claude-haiku-4-5", "executor_model": "claude-sonnet-4-5"},
+    "14_llm_self_audit":      {"judge_model": "claude-haiku-4-5", "executor_model": "claude-sonnet-4-5"}
+  }
+}

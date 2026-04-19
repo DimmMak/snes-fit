@@ -47,10 +47,21 @@ def run_audit(skill_name: str,
               write_report: bool = True) -> dict:
     cfg = _load_config()
     thresholds = _load_thresholds()
-    enabled_ids = [d["id"] for d in cfg.get("dimensions", []) if d.get("enabled", True)]
-    weights = {d["id"]: float(d.get("weight", 1.0)) for d in cfg.get("dimensions", [])}
+    dim_entries = cfg.get("dimensions", [])
+    enabled_ids = [d["id"] for d in dim_entries if d.get("enabled", True)]
+    weights = {d["id"]: float(d.get("weight", 1.0)) for d in dim_entries}
+    requires_api = {d["id"]: bool(d.get("requires_api", False)) for d in dim_entries}
     if dimensions_filter:
-        enabled_ids = [i for i in enabled_ids if i in dimensions_filter]
+        # Honor explicit user filter — allow opt-in to disabled dims.
+        filter_set = set(dimensions_filter)
+        known_ids = {d["id"] for d in dim_entries}
+        enabled_ids = [i for i in dimensions_filter if i in known_ids]
+        # fall back to configured-enabled filter if the explicit ones all matched
+        if not enabled_ids:
+            enabled_ids = [i for i in filter_set if i in known_ids]
+    # API-required dims: if no API key and not mock mode, they'll emit UNKNOWN
+    # findings rather than crash — handled inside each plugin.
+    api_mode = _api_mode()
     skill = tree_walker.get_skill(fleet_root, skill_name)
     if skill is None:
         raise SystemExit("Skill not found: {} (under {})".format(skill_name, fleet_root))
@@ -132,6 +143,15 @@ def run_audit(skill_name: str,
         with open(rpath, "w", encoding="utf-8") as fh:
             fh.write(md)
 
+    # Cost estimate log (best-effort): note API dims touched this run.
+    touched_api_dims = [p.name for p in plugins if requires_api.get(p.name)]
+    if touched_api_dims:
+        sys.stderr.write(
+            "[auto-test] API-required dims ran in mode={}: {}\n".format(
+                api_mode, ", ".join(touched_api_dims),
+            )
+        )
+
     return {
         "skill": skill_name,
         "score": total_score,
@@ -139,7 +159,17 @@ def run_audit(skill_name: str,
         "ship_ready": ship_ready,
         "results": results,
         "markdown": md,
+        "api_mode": api_mode,
+        "api_dims_ran": touched_api_dims,
     }
+
+
+def _api_mode() -> str:
+    if os.getenv("AUTO_TEST_MOCK") == "1":
+        return "mock"
+    if os.getenv("ANTHROPIC_API_KEY"):
+        return "live"
+    return "no-api"
 
 
 def _now_iso() -> str:

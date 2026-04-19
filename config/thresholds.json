@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.1",
+  "pass_rate_min": 0.8,
+  "p0_max": 0,
+  "decay_zero_rounds": 2,
+  "max_parallel": 4,
+  "ship_score_threshold": 80
+}

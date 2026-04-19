@@ -1,0 +1,7 @@
+{
+  "schema_version": "0.1",
+  "executor": "claude-sonnet-4-7",
+  "judge": "claude-haiku-4-5",
+  "phase": 1,
+  "notes": "Unused in phase 1 — reserved for phase-2 LLM-backed dims"
+}

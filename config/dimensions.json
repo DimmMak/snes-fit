@@ -1,0 +1,13 @@
+{
+  "schema_version": "0.1",
+  "dimensions": [
+    {"id": "01_adversarial",  "enabled": true, "runs_on": "skill", "weight": 1.0},
+    {"id": "02_scale",        "enabled": true, "runs_on": "skill", "weight": 1.0},
+    {"id": "03_composition",  "enabled": true, "runs_on": "skill", "weight": 1.0},
+    {"id": "04_security",     "enabled": true, "runs_on": "skill", "weight": 1.5},
+    {"id": "05_threat_intel", "enabled": true, "runs_on": "skill", "weight": 1.0},
+    {"id": "06_types",        "enabled": true, "runs_on": "skill", "weight": 0.75},
+    {"id": "07_structural",   "enabled": true, "runs_on": "skill", "weight": 1.5},
+    {"id": "08_design_audit", "enabled": true, "runs_on": "skill", "weight": 1.25}
+  ]
+}

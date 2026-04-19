@@ -1,0 +1,156 @@
+"""`.auto-test audit --skill <name>` — run all enabled dims on one skill."""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+from datetime import datetime, timezone
+from typing import List, Optional
+
+_THIS = os.path.dirname(os.path.abspath(__file__))
+_ROOT = os.path.abspath(os.path.join(_THIS, ".."))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+from dimensions._plugin_base import DimensionResult  # noqa: E402
+from scripts.lib import decay_tracker, regression_vault, report_renderer, scorecard, tree_walker  # noqa: E402
+from scripts.lib.plugin_loader import discover_plugins  # noqa: E402
+
+
+DEFAULT_FLEET_ROOT = os.path.expanduser("~/Desktop/CLAUDE CODE")
+
+
+def _load_config() -> dict:
+    cfg_path = os.path.join(_ROOT, "config", "dimensions.json")
+    try:
+        with open(cfg_path, "r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return {"schema_version": "0.1", "dimensions": []}
+
+
+def _load_thresholds() -> dict:
+    p = os.path.join(_ROOT, "config", "thresholds.json")
+    try:
+        with open(p, "r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return {"decay_zero_rounds": 2, "ship_score_threshold": 80}
+
+
+def run_audit(skill_name: str,
+              fleet_root: str = DEFAULT_FLEET_ROOT,
+              round_num: int = 1,
+              dimensions_filter: Optional[List[str]] = None,
+              write_vault: bool = True,
+              write_report: bool = True) -> dict:
+    cfg = _load_config()
+    thresholds = _load_thresholds()
+    enabled_ids = [d["id"] for d in cfg.get("dimensions", []) if d.get("enabled", True)]
+    weights = {d["id"]: float(d.get("weight", 1.0)) for d in cfg.get("dimensions", [])}
+    if dimensions_filter:
+        enabled_ids = [i for i in enabled_ids if i in dimensions_filter]
+    skill = tree_walker.get_skill(fleet_root, skill_name)
+    if skill is None:
+        raise SystemExit("Skill not found: {} (under {})".format(skill_name, fleet_root))
+    plugins = discover_plugins(enabled_ids=enabled_ids)
+
+    results: List[DimensionResult] = []
+    for plugin in plugins:
+        try:
+            findings = plugin.probe(skill)
+        except Exception as e:
+            findings = []
+            results.append(DimensionResult(
+                dimension=plugin.name, score=0.0, findings=[], passed=False,
+            ))
+            sys.stderr.write("[warn] plugin {} raised: {}\n".format(plugin.name, e))
+            continue
+        score = plugin.score(findings)
+        passed = score >= 0.8 and not any(f.severity == "critical" for f in findings)
+        result = DimensionResult(
+            dimension=plugin.name, score=score, findings=findings, passed=passed,
+        )
+        results.append(result)
+
+    # Write findings to vault
+    vault_dir = os.path.join(_ROOT, "vault", skill_name)
+    if write_vault:
+        for r in results:
+            for f in r.findings:
+                regression_vault.append_finding(vault_dir, {
+                    "schema_version": "0.1",
+                    "timestamp_iso": _now_iso(),
+                    "round": round_num,
+                    "dimension": f.dimension,
+                    "severity": f.severity,
+                    "message": f.message,
+                    "evidence": f.evidence,
+                })
+
+    # Aggregate
+    total_score = scorecard.calculate_score(results, weights=weights)
+    letter = scorecard.grade(total_score)
+
+    # Decay read-back
+    found = decay_tracker.load_findings(vault_dir)
+    by_round = decay_tracker.group_by_round(found)
+    curve = decay_tracker.decay_curve(by_round)
+    ship_ready = decay_tracker.is_ship_ready(
+        by_round, zero_rounds_required=int(thresholds.get("decay_zero_rounds", 2)),
+    ) and total_score >= int(thresholds.get("ship_score_threshold", 80))
+
+    # Render report
+    md = report_renderer.render_scorecard(
+        skill=skill_name, results=results,
+        decay_curve=curve, score=total_score, grade=letter,
+        ship_ready=ship_ready,
+    )
+    if write_report:
+        reports_dir = os.path.join(_ROOT, "reports")
+        os.makedirs(reports_dir, exist_ok=True)
+        rpath = os.path.join(reports_dir, "{}-{}.md".format(
+            datetime.now(timezone.utc).strftime("%Y-%m-%d"), skill_name,
+        ))
+        with open(rpath, "w", encoding="utf-8") as fh:
+            fh.write(md)
+
+    return {
+        "skill": skill_name,
+        "score": total_score,
+        "grade": letter,
+        "ship_ready": ship_ready,
+        "results": results,
+        "markdown": md,
+    }
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    ap = argparse.ArgumentParser(description=".auto-test audit — run all enabled dims on one skill")
+    ap.add_argument("--skill", required=True, help="skill name (directory under fleet root)")
+    ap.add_argument("--round", type=int, default=1, help="decay-tracker round number")
+    ap.add_argument("--dimensions", default="", help="comma-separated dimension id filter")
+    ap.add_argument("--fleet-root", default=DEFAULT_FLEET_ROOT)
+    ap.add_argument("--no-vault", action="store_true", help="skip writing to vault")
+    ap.add_argument("--no-report", action="store_true", help="skip writing report file")
+    args = ap.parse_args(argv)
+    dim_filter = [s.strip() for s in args.dimensions.split(",") if s.strip()] or None
+    out = run_audit(
+        skill_name=args.skill,
+        fleet_root=args.fleet_root,
+        round_num=args.round,
+        dimensions_filter=dim_filter,
+        write_vault=not args.no_vault,
+        write_report=not args.no_report,
+    )
+    sys.stdout.write(out["markdown"])
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

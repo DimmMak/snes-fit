@@ -80,16 +80,53 @@ class StructuralIssue:
     evidence: str
 
 
+def _load_excluded_skill_names() -> set:
+    """Read config/excluded-skills.json — repos that look like skills but aren't.
+
+    Returns a set of directory names to skip during fleet discovery.
+    Silently returns empty set if the config is missing or malformed
+    (graceful degradation — never crash discover_skills on a config bug).
+    """
+    import json
+    cfg_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        os.pardir, os.pardir, "config", "excluded-skills.json",
+    )
+    cfg_path = os.path.abspath(cfg_path)
+    if not os.path.isfile(cfg_path):
+        return set()
+    try:
+        with open(cfg_path, "r", encoding="utf-8") as fh:
+            doc = json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return set()
+    out: set = set()
+    for entry in doc.get("excluded", []):
+        if isinstance(entry, dict) and entry.get("name"):
+            out.add(entry["name"])
+        elif isinstance(entry, str):
+            out.add(entry)
+    return out
+
+
 def discover_skills(root: str) -> List[SkillInfo]:
-    """Return one SkillInfo per direct child of `root` that contains SKILL.md."""
+    """Return one SkillInfo per direct child of `root` that contains SKILL.md.
+
+    Honors config/excluded-skills.json — any repo listed there is skipped
+    (for repos that live under ~/Desktop/CLAUDE CODE/ but aren't skills:
+    blue-hill-capital, claude-sessions, DimmMak.github.io, etc.).
+    """
     results: List[SkillInfo] = []
     if not os.path.isdir(root):
         return results
+    excluded_names = _load_excluded_skill_names()
     for entry in sorted(os.listdir(root)):
         full = os.path.join(root, entry)
         if not os.path.isdir(full):
             continue
         if entry.startswith(".") or entry.startswith("_"):
+            continue
+        if entry in excluded_names:
             continue
         results.append(_build_skill_info(entry, full))
     return results

@@ -67,6 +67,14 @@ def run_audit(skill_name: str,
     # API-required dims: if no API key and not mock mode, they'll emit UNKNOWN
     # findings rather than crash — handled inside each plugin.
     api_mode = _api_mode()
+    # Honor excluded-skills config — refuse to audit explicitly non-skill repos
+    # (blue-hill-capital, claude-sessions, DimmMak.github.io, etc.).
+    _excluded = tree_walker._load_excluded_skill_names()
+    if skill_name in _excluded:
+        raise SystemExit(
+            "Skill '{}' is in config/excluded-skills.json (not a Claude skill; "
+            "audit skipped). Remove from exclusions if this is wrong.".format(skill_name)
+        )
     skill = tree_walker.get_skill(fleet_root, skill_name)
     if skill is None:
         raise SystemExit("Skill not found: {} (under {})".format(skill_name, fleet_root))

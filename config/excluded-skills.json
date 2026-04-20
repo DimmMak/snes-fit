@@ -1,0 +1,31 @@
+{
+  "schema_version": "0.1",
+  "description": "Repos under ~/Desktop/CLAUDE CODE/ that look like skills but aren't. Tree walker skips these when discovering audit targets. Each entry is the directory name. Keep this list small — only add after verifying the repo legitimately doesn't fit the skill pattern (no SKILL.md by design, or structurally different purpose).",
+  "excluded": [
+    {
+      "name": "blue-hill-capital",
+      "reason": "Fund governance + data repo. Fund skills (royal-rumble, chief-of-staff, accuracy-tracker, price-desk, fundamentals-desk, technicals-desk, journalist) read from / write to this repo — but it is not itself a Claude skill.",
+      "verified_at": "2026-04-19"
+    },
+    {
+      "name": "claude-sessions",
+      "reason": "Session archive (12,429+ message logs indexed by date/topic). Not invoked as a skill; consumed by .archive and /time-machine skills.",
+      "verified_at": "2026-04-19"
+    },
+    {
+      "name": "DimmMak.github.io",
+      "reason": "Jekyll blog (minimal-mistakes theme). Not a skill; published via GitHub Pages.",
+      "verified_at": "2026-04-19"
+    },
+    {
+      "name": "the-overhaul",
+      "reason": "Case study repo documenting the 3-axis overhaul architecture. Reference material, not a skill.",
+      "verified_at": "2026-04-19"
+    },
+    {
+      "name": "cowork-recipes",
+      "reason": "Recipe collection for Claude Cowork automations. Markdown + shell snippets; not invoked as a Claude skill.",
+      "verified_at": "2026-04-19"
+    }
+  ]
+}

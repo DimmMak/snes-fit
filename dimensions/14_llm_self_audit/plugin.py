@@ -38,7 +38,7 @@ class LLMSelfAuditPlugin(DimensionPlugin):
             "SKILL.md:\n---\n{}\n---\n\n"
             "ARCHITECTURE.md:\n---\n{}\n---\n\n"
             "NON_GOALS.md:\n---\n{}\n---\n"
-        ).format(skill_md[:6000], arch[:4000], nong[:2000])
+        ).format(skill_md[:20000], arch[:20000], nong[:8000])  # v0.5.1: bumped from 6000/4000/2000 after gmail ARCHITECTURE.md (6842 chars) was being truncated, causing false-positive "table cut off" findings
         v = judge(client, judge_prompt, user, cost_guard=guard)
         verdict = v.get("verdict", "UNKNOWN")
         if verdict == "PASS":

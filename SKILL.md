@@ -3,7 +3,7 @@ name: snes-fit
 domain: general
 version: 0.1.0
 description: >
-  Fleet-wide QA skill that audits any other skill against structural, adversarial, scale, composition, security, threat-intel, type, and design dimensions. Plugin architecture lets you add dimensions as separate dirs — no core code changes. Ship only when decay rule hits 2 consecutive zero-finding rounds. Compatible with Anthropic skill-creator eval schemas. NOT for: creating new skills (use skill-builder). NOT for: running skills (use the skill directly). NOT for: continuous background monitoring (use scheduled-tasks).
+  Fleet-wide QA skill that audits any other skill against structural, adversarial, scale, composition, security, threat-intel, type, and design dimensions. Plugin architecture lets you add dimensions as separate dirs — no core code changes. Ship only when decay rule hits 2 consecutive zero-finding rounds. Compatible with Anthropic skill-creator eval schemas. NOT for: creating new skills (use snes-builder). NOT for: running skills (use the skill directly). NOT for: continuous background monitoring (use scheduled-tasks).
 capabilities:
   reads:
     - "any skill's SKILL.md + scripts/ + config/"
@@ -26,7 +26,7 @@ unix_contract:
   stdin_support: true
   stdout_format: "markdown scorecard"
   composable_with:
-    - skill-builder
+    - snes-builder
     - future-proof
     - mewtwo
     - home

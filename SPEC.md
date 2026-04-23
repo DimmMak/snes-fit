@@ -2,7 +2,7 @@
 
 The FLEET standard. A skill "fits" the SNES cartridge slot when it satisfies
 every rule below. This file is the **single source of truth** — both
-`snes-fit`'s audit plugins AND `skill-builder`'s scaffolder read from it.
+`snes-fit`'s audit plugins AND `snes-builder`'s scaffolder read from it.
 
 Spec version: **0.1.0**
 Last reviewed: **2026-04-23**
@@ -14,7 +14,7 @@ Last reviewed: **2026-04-23**
 | Consumer | Role | Reads |
 |---|---|---|
 | `snes-fit/dimensions/*/plugin.py` | Audit — enforces spec | "Required files" + "Required frontmatter" + "Canonical subdirs" + "Forbidden patterns" |
-| `skill-builder` Phase 5.5 | Scaffold — generates compliant skills | Same sections; emits stubs that pass snes-fit on first audit |
+| `snes-builder` Phase 5.5 | Scaffold — generates compliant skills | Same sections; emits stubs that pass snes-fit on first audit |
 
 When this spec changes, both consumers pick it up automatically. Bump
 `spec_version` in the front matter when breaking changes land.

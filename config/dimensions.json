@@ -9,11 +9,11 @@
     {"id": "06_types",             "enabled": true,  "runs_on": "skill", "weight": 0.75},
     {"id": "07_structural",        "enabled": true,  "runs_on": "skill", "weight": 1.5},
     {"id": "08_design_audit",      "enabled": true,  "runs_on": "skill", "weight": 1.25},
-    {"id": "09_llm_output_quality","enabled": false, "runs_on": "skill", "weight": 1.0,  "requires_api": true},
-    {"id": "10_trigger_precision", "enabled": false, "runs_on": "skill", "weight": 1.0,  "requires_api": true},
-    {"id": "11_hallucination_probe","enabled": false,"runs_on": "skill", "weight": 1.0,  "requires_api": true},
-    {"id": "12_prompt_injection",  "enabled": false, "runs_on": "skill", "weight": 1.5,  "requires_api": true},
-    {"id": "13_contract_drift",    "enabled": false, "runs_on": "skill", "weight": 1.0,  "requires_api": true},
-    {"id": "14_llm_self_audit",    "enabled": false, "runs_on": "skill", "weight": 1.0,  "requires_api": true}
+    {"id": "09_llm_output_quality","enabled": true,  "runs_on": "skill", "weight": 1.0,  "requires_api": true},
+    {"id": "10_trigger_precision", "enabled": true,  "runs_on": "skill", "weight": 1.0,  "requires_api": true},
+    {"id": "11_hallucination_probe","enabled": true, "runs_on": "skill", "weight": 1.0,  "requires_api": true},
+    {"id": "12_prompt_injection",  "enabled": true,  "runs_on": "skill", "weight": 1.5,  "requires_api": true},
+    {"id": "13_contract_drift",    "enabled": true,  "runs_on": "skill", "weight": 1.0,  "requires_api": true},
+    {"id": "14_llm_self_audit",    "enabled": true,  "runs_on": "skill", "weight": 1.0,  "requires_api": true}
   ]
 }

@@ -1,4 +1,4 @@
-"""`.auto-test benchmark --skill <name>` — rolling baseline + delta."""
+"""`.snes-fit benchmark --skill <name>` — rolling baseline + delta."""
 from __future__ import annotations
 
 import argparse
@@ -17,7 +17,7 @@ from scripts.lib import regression_vault  # noqa: E402
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    ap = argparse.ArgumentParser(description=".auto-test benchmark")
+    ap = argparse.ArgumentParser(description=".snes-fit benchmark")
     ap.add_argument("--skill", required=True)
     ap.add_argument("--round", type=int, default=1)
     ap.add_argument("--fleet-root", default=DEFAULT_FLEET_ROOT)

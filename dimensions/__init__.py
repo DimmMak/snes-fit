@@ -1,1 +1,1 @@
-"""Plugin tree for .auto-test dimensions. Each subdir is one dimension."""
+"""Plugin tree for .snes-fit dimensions. Each subdir is one dimension."""

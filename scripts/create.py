@@ -1,4 +1,4 @@
-"""`.auto-test create --skill <name>` — scaffold Anthropic-compatible evals.json."""
+"""`.snes-fit create --skill <name>` — scaffold Anthropic-compatible evals.json."""
 from __future__ import annotations
 
 import argparse
@@ -57,7 +57,7 @@ def scaffold(skill_name: str, force: bool = False) -> str:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    ap = argparse.ArgumentParser(description=".auto-test create — scaffold eval suite")
+    ap = argparse.ArgumentParser(description=".snes-fit create — scaffold eval suite")
     ap.add_argument("--skill", required=True)
     ap.add_argument("--force", action="store_true")
     args = ap.parse_args(argv)

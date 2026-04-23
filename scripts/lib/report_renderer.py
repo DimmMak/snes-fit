@@ -18,7 +18,7 @@ def render_scorecard(skill: str,
                      ship_ready: Optional[bool] = None) -> str:
     """Return a markdown scorecard string."""
     lines: List[str] = []
-    lines.append("# .auto-test scorecard — {}".format(skill))
+    lines.append("# .snes-fit scorecard — {}".format(skill))
     lines.append("")
     lines.append("**Overall score:** {}/100  |  **Grade:** {}".format(score, grade))
     if ship_ready is not None:

@@ -1,4 +1,4 @@
-# .auto-test — Non-Goals
+# .snes-fit — Non-Goals
 
 What this skill will **never** do. Each entry is a structural commitment, not a preference.
 

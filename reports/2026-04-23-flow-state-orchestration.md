@@ -1,4 +1,4 @@
-# .auto-test scorecard — time-machine
+# .snes-fit scorecard — flow-state-orchestration
 
 **Overall score:** 93/100  |  **Grade:** A
 **Ship-ready (decay rule):** NO
@@ -22,22 +22,22 @@
 
 | 🟣 Dimension | 🟣 Message | 🟣 Evidence |
 |---|---|---|
-| 08_design_audit | Missing design doc: ARCHITECTURE.md | /Users/danny/Desktop/CLAUDE CODE/time-machine/ARCHITECTURE.md |
-| 08_design_audit | Missing design doc: SCHEMA.md | /Users/danny/Desktop/CLAUDE CODE/time-machine/SCHEMA.md |
+| 08_design_audit | Missing design doc: ARCHITECTURE.md | /Users/danny/.claude/skills/flow-state-orchestration/ARCHITECTURE.md |
+| 08_design_audit | Missing design doc: SCHEMA.md | /Users/danny/.claude/skills/flow-state-orchestration/SCHEMA.md |
 
 ### Minor (2)
 
 | 🟣 Dimension | 🟣 Message | 🟣 Evidence |
 |---|---|---|
-| 08_design_audit | No NON_GOALS.md and no 'Non-goals' section in SKILL.md | /Users/danny/Desktop/CLAUDE CODE/time-machine |
-| 08_design_audit | No schema_version field found in any config/*.json or logs/*.jsonl | /Users/danny/Desktop/CLAUDE CODE/time-machine |
+| 08_design_audit | Missing design doc: CHANGELOG.md | /Users/danny/.claude/skills/flow-state-orchestration/CHANGELOG.md |
+| 08_design_audit | No schema_version field found in any config/*.json or logs/*.jsonl | /Users/danny/.claude/skills/flow-state-orchestration |
 
 ## Rounds
 
 | 🟣 Round | 🟣 Structural | 🟣 Minor | 🟣 Cosmetic | 🟣 Markers | 🟣 Verdict |
 |---|---|---|---|---|---|
-| 1 | 4 | 4 | 0 | 2 | 🔴 DIRTY |
-| 2 | 2 | 2 | 0 | 1 | 🔴 DIRTY |
+| 1 | 2 | 3 | 1 | 1 | 🔴 DIRTY |
+| 2 | 4 | 2 | 0 | 1 | 🔴 DIRTY |
 | 3 | 2 | 2 | 0 | 1 | 🔴 DIRTY |
 | 4 | 2 | 2 | 0 | 1 | 🔴 DIRTY |
 | 5 | 2 | 2 | 0 | 1 | 🔴 DIRTY |

@@ -1,4 +1,4 @@
-"""`.auto-test improve --skill <name>` — phase-1 stub.
+"""`.snes-fit improve --skill <name>` — phase-1 stub.
 
 Phase 2 will call the LLM judge on each finding and emit proposed patches.
 For now we summarize the latest vault findings so the human can act.
@@ -20,7 +20,7 @@ from scripts.lib import regression_vault  # noqa: E402
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    ap = argparse.ArgumentParser(description=".auto-test improve — phase-1 stub")
+    ap = argparse.ArgumentParser(description=".snes-fit improve — phase-1 stub")
     ap.add_argument("--skill", required=True)
     args = ap.parse_args(argv)
     vault_dir = os.path.join(_ROOT, "vault", args.skill)

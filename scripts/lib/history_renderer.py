@@ -69,12 +69,12 @@ def render_skill_history(skill_name: str,
                          zero_rounds_required: int = 2) -> str:
     """Full per-skill timeline: round-by-round table."""
     if not os.path.isdir(vault_dir):
-        return "# .auto-test history — {}\n\n_No vault found. Run `.auto-test audit --skill {}` first._\n".format(
+        return "# .snes-fit history — {}\n\n_No vault found. Run `.snes-fit audit --skill {}` first._\n".format(
             skill_name, skill_name,
         )
     findings = decay_tracker.load_findings(vault_dir)
     if not findings:
-        return "# .auto-test history — {}\n\n_Vault exists but no findings recorded yet._\n".format(skill_name)
+        return "# .snes-fit history — {}\n\n_Vault exists but no findings recorded yet._\n".format(skill_name)
 
     by_round = decay_tracker.group_by_round(findings)
     summaries = decay_tracker.summarize_rounds(by_round)
@@ -88,7 +88,7 @@ def render_skill_history(skill_name: str,
             round_timestamps[f.round] = f.timestamp_iso
 
     lines: List[str] = []
-    lines.append("# .auto-test history — {}".format(skill_name))
+    lines.append("# .snes-fit history — {}".format(skill_name))
     lines.append("")
     lines.append("**Total rounds:** {}  |  **Clean streak:** {}  |  **Ship-ready:** {}".format(
         len(summaries), streak,
@@ -126,7 +126,7 @@ def render_fleet_history(vault_root: str,
                         zero_rounds_required: int = 2) -> str:
     """Fleet-wide trend table — one row per skill with its latest state."""
     if not os.path.isdir(vault_root):
-        return "# .auto-test fleet history\n\n_No vault directory yet._\n"
+        return "# .snes-fit fleet history\n\n_No vault directory yet._\n"
     skills_seen: List[Tuple[str, str]] = []
     for entry in sorted(os.listdir(vault_root)):
         full = os.path.join(vault_root, entry)
@@ -141,7 +141,7 @@ def render_fleet_history(vault_root: str,
             rows.append(s)
 
     lines: List[str] = []
-    lines.append("# .auto-test fleet history")
+    lines.append("# .snes-fit fleet history")
     lines.append("")
     lines.append("**Skills audited (ever):** {}".format(len(rows)))
     ship_ready_count = sum(1 for r in rows if r.ship_ready)
@@ -149,7 +149,7 @@ def render_fleet_history(vault_root: str,
     lines.append("")
 
     if not rows:
-        lines.append("_No audit history yet — run `.auto-test audit --all` to populate._")
+        lines.append("_No audit history yet — run `.snes-fit audit --all` to populate._")
         return "\n".join(lines) + "\n"
 
     lines.append(

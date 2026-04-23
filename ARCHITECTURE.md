@@ -1,14 +1,14 @@
-# .auto-test — Architecture
+# .snes-fit — Architecture
 
 ## Why this exists
 
 Danny's fleet now has 25+ skills. Without automated QA, drift is invisible: a skill that was world-class at v0.1 silently rots as its dependencies change, its schema ages, and new sibling skills import its internals.
 
-`.auto-test` operationalizes `principle_stress_test_cadence` from Danny's memory:
+`.snes-fit` operationalizes `principle_stress_test_cadence` from Danny's memory:
 
 > Every new skill / feature / refactor fires the battery: adversarial → scale → composition → security → threat-intel. Ship only when bug-rate decays to ≤1 cosmetic / 0 structural for two rounds.
 
-That principle used to be manual. `.auto-test` makes it a one-command pass.
+That principle used to be manual. `.snes-fit` makes it a one-command pass.
 
 ---
 

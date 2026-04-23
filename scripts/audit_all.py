@@ -1,4 +1,4 @@
-"""`.auto-test audit --all` — fleet sweep."""
+"""`.snes-fit audit --all` — fleet sweep."""
 from __future__ import annotations
 
 import argparse
@@ -16,7 +16,7 @@ from scripts.lib import tree_walker  # noqa: E402
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    ap = argparse.ArgumentParser(description=".auto-test audit --all — fleet sweep")
+    ap = argparse.ArgumentParser(description=".snes-fit audit --all — fleet sweep")
     ap.add_argument("--fleet-root", default=DEFAULT_FLEET_ROOT)
     ap.add_argument("--round", type=int, default=None,
                     help="decay-tracker round number (default: auto-increment per skill)")
@@ -24,10 +24,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = ap.parse_args(argv)
 
     skip = {s.strip() for s in args.skip.split(",") if s.strip()}
-    skip.add("auto-test")  # do not recursively audit self by default
+    skip.add("snes-fit")  # do not recursively audit self by default
 
     skills = [s for s in tree_walker.discover_skills(args.fleet_root) if s.has_skill_md]
-    sys.stdout.write("# .auto-test fleet sweep\n\n")
+    sys.stdout.write("# .snes-fit fleet sweep\n\n")
     sys.stdout.write("Discovered {} skills.\n\n".format(len(skills)))
     sys.stdout.write("| 🟣 Skill | 🟣 Score | 🟣 Grade | 🟣 Ship-ready |\n")
     sys.stdout.write("|---|---|---|---|\n")

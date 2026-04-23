@@ -1,4 +1,4 @@
-"""`.auto-test history <skill>` or `.auto-test history --all`.
+"""`.snes-fit history <skill>` or `.snes-fit history --all`.
 
 Renders audit history as markdown — timeline for one skill or fleet-wide
 summary. Read-only; never mutates vault data.
@@ -30,7 +30,7 @@ def _load_thresholds() -> dict:
 
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(
-        description=".auto-test history — per-skill or fleet-wide audit timeline"
+        description=".snes-fit history — per-skill or fleet-wide audit timeline"
     )
     ap.add_argument("--skill", default=None, help="skill name (omit with --all)")
     ap.add_argument("--all", action="store_true", help="fleet-wide summary")

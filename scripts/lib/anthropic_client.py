@@ -56,14 +56,14 @@ class AnthropicClient:
             api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
             self.mock = True
-            sys.stderr.write("[auto-test] ANTHROPIC_API_KEY missing; mock mode\n")
+            sys.stderr.write("[snes-fit] ANTHROPIC_API_KEY missing; mock mode\n")
             return
         try:
             import anthropic  # type: ignore
             self.client = anthropic.Anthropic(api_key=api_key)
         except ImportError:
             self.mock = True
-            sys.stderr.write("[auto-test] anthropic SDK missing; mock mode\n")
+            sys.stderr.write("[snes-fit] anthropic SDK missing; mock mode\n")
 
     # ------------------------------------------------------------------
     def messages_create(self,

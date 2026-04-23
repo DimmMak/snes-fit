@@ -1,6 +1,6 @@
-# .auto-test — Data Contracts (SCHEMA.md)
+# .snes-fit — Data Contracts (SCHEMA.md)
 
-Every file written or read by `.auto-test` is defined here. Every schema carries an explicit `schema_version` field.
+Every file written or read by `.snes-fit` is defined here. Every schema carries an explicit `schema_version` field.
 
 Current schema version: **0.1**
 

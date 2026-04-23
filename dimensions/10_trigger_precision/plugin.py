@@ -85,7 +85,7 @@ class TriggerPrecisionPlugin(DimensionPlugin):
 
 
 def _load_or_generate_tests(target, skill_md: str) -> List[Dict[str, Any]]:
-    # Preferred: evals/<skill>/trigger-tests.json anchored at the auto-test root.
+    # Preferred: evals/<skill>/trigger-tests.json anchored at the snes-fit root.
     here = os.path.dirname(os.path.abspath(__file__))
     root = os.path.abspath(os.path.join(here, "..", ".."))
     user_file = os.path.join(root, "evals", target.name, "trigger-tests.json")

@@ -1,4 +1,4 @@
-"""`.auto-test audit --skill <name>` — run all enabled dims on one skill."""
+"""`.snes-fit audit --skill <name>` — run all enabled dims on one skill."""
 from __future__ import annotations
 
 import argparse
@@ -173,7 +173,7 @@ def run_audit(skill_name: str,
     touched_api_dims = [p.name for p in plugins if requires_api.get(p.name)]
     if touched_api_dims:
         sys.stderr.write(
-            "[auto-test] API-required dims ran in mode={}: {}\n".format(
+            "[snes-fit] API-required dims ran in mode={}: {}\n".format(
                 api_mode, ", ".join(touched_api_dims),
             )
         )
@@ -203,7 +203,7 @@ def _now_iso() -> str:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    ap = argparse.ArgumentParser(description=".auto-test audit — run all enabled dims on one skill")
+    ap = argparse.ArgumentParser(description=".snes-fit audit — run all enabled dims on one skill")
     ap.add_argument("--skill", required=True, help="skill name (directory under fleet root)")
     ap.add_argument("--round", type=int, default=None,
                     help="decay-tracker round number (default: auto-increment)")

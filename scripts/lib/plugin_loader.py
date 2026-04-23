@@ -11,7 +11,7 @@ import os
 import sys
 from typing import List, Optional
 
-# Allow running both as a package (from .auto-test root) and as a bare script.
+# Allow running both as a package (from .snes-fit root) and as a bare script.
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _AUTO_TEST_ROOT = os.path.abspath(os.path.join(_THIS_DIR, "..", ".."))
 if _AUTO_TEST_ROOT not in sys.path:
@@ -45,7 +45,7 @@ def discover_plugins(dimensions_dir: Optional[str] = None,
         plugin_py = os.path.join(sub, "plugin.py")
         if not os.path.isfile(plugin_py):
             continue
-        mod_name = "auto_test_dim_{}".format(entry)
+        mod_name = "snes_fit_dim_{}".format(entry)
         spec = importlib.util.spec_from_file_location(mod_name, plugin_py)
         if spec is None or spec.loader is None:
             continue
@@ -65,7 +65,7 @@ def discover_plugins(dimensions_dir: Optional[str] = None,
                 pname = getattr(instance, "name", "") or entry
                 if pname in seen_names:
                     sys.stderr.write(
-                        "auto-test: plugin name collision: {!r} already loaded; "
+                        "snes-fit: plugin name collision: {!r} already loaded; "
                         "skipping duplicate from {}\n".format(pname, entry)
                     )
                     continue

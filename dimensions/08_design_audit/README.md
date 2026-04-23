@@ -14,4 +14,4 @@
 | NON_GOALS.md OR "Non-goals" section in SKILL.md | minor |
 | `schema_version` field in any config/*.json or logs/*.jsonl | minor |
 
-This dim is also invocable stand-alone via `.auto-test design-audit --skill <name>` for a fast CI gate.
+This dim is also invocable stand-alone via `.snes-fit design-audit --skill <name>` for a fast CI gate.

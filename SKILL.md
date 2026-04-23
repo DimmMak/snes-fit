@@ -1,5 +1,5 @@
 ---
-name: auto-test
+name: snes-fit
 domain: general
 version: 0.1.0
 description: >
@@ -32,7 +32,7 @@ unix_contract:
     - home
 ---
 
-# .auto-test — Fleet-Wide QA Skill
+# .snes-fit — Fleet-Wide QA Skill
 
 Runs 8 pure-Python dimensions against any skill in the fleet. Binary PASS/FAIL/UNKNOWN verdicts; aggregated into a letter grade; ship gated by the decay stopping rule (2 consecutive rounds of ≤1 cosmetic + 0 structural findings).
 
@@ -44,12 +44,12 @@ Phase 1 is stdlib-only. No Claude API key required. Phase 2 adds LLM-backed dime
 
 | 🟣 Command | 🟣 Mode | 🟣 What it does | 🟣 Writes |
 |---|---|---|---|
-| `.auto-test audit --skill <name>` | Eval | Runs all enabled dims, prints scorecard | `vault/<skill>/findings.jsonl`, `reports/<date>-<skill>.md` |
-| `.auto-test audit --all` | Eval | Fleet sweep — all skills under `~/Desktop/CLAUDE CODE/` | per-skill vault + one summary report |
-| `.auto-test design-audit --skill <name>` | DesignAudit | Runs ONLY dimension 08 — fast structural/design check | `vault/<skill>/findings.jsonl` |
-| `.auto-test create --skill <name>` | Create | Scaffolds `evals/<skill>/evals.json` (Anthropic-compatible) | `evals/<skill>/evals.json` |
-| `.auto-test improve --skill <name>` | Improve | Phase-1 stub; phase-2 LLM fix engine | — |
-| `.auto-test benchmark --skill <name>` | Benchmark | Rolling baseline; delta vs previous run | `vault/<skill>/benchmark.jsonl` |
+| `.snes-fit audit --skill <name>` | Eval | Runs all enabled dims, prints scorecard | `vault/<skill>/findings.jsonl`, `reports/<date>-<skill>.md` |
+| `.snes-fit audit --all` | Eval | Fleet sweep — all skills under `~/Desktop/CLAUDE CODE/` | per-skill vault + one summary report |
+| `.snes-fit design-audit --skill <name>` | DesignAudit | Runs ONLY dimension 08 — fast structural/design check | `vault/<skill>/findings.jsonl` |
+| `.snes-fit create --skill <name>` | Create | Scaffolds `evals/<skill>/evals.json` (Anthropic-compatible) | `evals/<skill>/evals.json` |
+| `.snes-fit improve --skill <name>` | Improve | Phase-1 stub; phase-2 LLM fix engine | — |
+| `.snes-fit benchmark --skill <name>` | Benchmark | Rolling baseline; delta vs previous run | `vault/<skill>/benchmark.jsonl` |
 
 ---
 

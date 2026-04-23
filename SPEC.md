@@ -1,10 +1,10 @@
-# SNES-Fit Spec v0.1
+# SNES-Fit Spec v0.2
 
 The FLEET standard. A skill "fits" the SNES cartridge slot when it satisfies
 every rule below. This file is the **single source of truth** — both
 `snes-fit`'s audit plugins AND `snes-builder`'s scaffolder read from it.
 
-Spec version: **0.1.0**
+Spec version: **0.2.0**
 Last reviewed: **2026-04-23**
 
 ---
@@ -90,7 +90,16 @@ Dirs prefixed with `_` (e.g., `_archive`) are allowed without flag.
 | Homograph / confusable unicode chars | 05_threat_intel | **minor** |
 | Tree depth > 5 | 07_structural | **minor** |
 | Functions missing type hints | 06_types | **minor** |
-| Files > per-file size cap | 02_scale | **minor** |
+| Files > per-file size cap (2 MB) | 02_scale | **minor** |
+| Skill total size > 50 MB (excluding `data/cache/**`) | 02_scale | **major** |
+
+**Size exemption:** `data/cache/**` is exempt from all 02_scale size caps
+(total bytes + per-file). Rationale: API-rate-limited skills (filings-desk,
+earnings-desk, options-desk, macro-desk) legitimately cache large source
+documents (SEC filings, earnings transcripts, options chains). Caching is
+best practice for rate-limited APIs; flagging it as bloat punishes
+responsible behavior. If a skill needs data outside `data/cache/`, size
+rules still apply.
 
 ---
 

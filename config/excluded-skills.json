@@ -26,6 +26,11 @@
       "name": "cowork-recipes",
       "reason": "Recipe collection for Claude Cowork automations. Markdown + shell snippets; not invoked as a Claude skill.",
       "verified_at": "2026-04-19"
+    },
+    {
+      "name": "royal-rumble.bak.20260420-140439",
+      "reason": "Timestamped backup of royal-rumble from 2026-04-20. Not a live skill — audit trail for the royal-rumble v1 cutover. Safe to delete later.",
+      "verified_at": "2026-04-23"
     }
   ]
 }

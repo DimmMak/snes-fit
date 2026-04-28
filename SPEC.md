@@ -128,6 +128,8 @@ Each round = one audit pass with fixes in between. Enforced by
 - Grade: A ≥ 90, B ≥ 80, C ≥ 70, D ≥ 60, F < 60
 - Final score capped at [0, 100]
 
+**On the [0, 100] clamp (clarified 2026-04-28 per LOW #1):** the deduction formula has no upper bound — a skill with hundreds of cosmetic findings could compute to a negative pre-clamp score. The clamp is intentional: scores below 0 carry no additional information (all paths to "0" are "you failed"; the magnitude of failure is captured in the findings list, not the number). The clamp prevents unbounded negative numbers from masquerading as comparable. NON_GOALS.md #9 ("No score below 0 or above 100") reads as an invariant; this is its formula-level enforcement.
+
 ---
 
 ## Versioning this spec

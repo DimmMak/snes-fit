@@ -14,7 +14,7 @@ What this skill will **never** do. Each entry is a structural commitment, not a 
 | 8 | No per-user accounts | No auth, no sessions, no roles |
 | 9 | No score below 0 or above 100 | Grade is clamped; overflow is a bug, not a feature |
 | 10 | No bypass of decay rule | Ship gate is enforced in code, not in policy. **"Ship" defined (2026-04-28 per MED #1):** symlinking the skill at `~/.claude/skills/<name>` (making it harness-discoverable) — that's the ship action snes-fit gates. The gate fires at symlink time, not at git-push time. Skill repos can be pushed at any commit; the harness only sees skills that are symlinked. |
-| 11 | No external network calls in phase 1 | Stdlib only; reproducible offline |
+| 11 | No external network calls in **phase 1** (phase-bound; expires when phase 2 LLM dimensions land) | Stdlib only; reproducible offline. **Note (clarified 2026-04-28 per LOW #2):** unlike the other rows, this is NOT a permanent invariant — it's the phase-1 mode of operation. When phase 2 ships LLM-backed dimensions (09-14), this entry must be retired or rewritten as "no external network calls in non-LLM dimensions." Calling that out here so future readers don't read it as forever-true. |
 | 12 | No YAML / pickle / binary formats for state | JSON + JSONL + markdown only — human-readable forever |
 | 13 | No modification of the skill being audited | Read-only probes; writes confined to `vault/` and `reports/` |
 | 14 | No invented dimensions outside the declared set | Dimensions are versioned; new ones require a spec bump |

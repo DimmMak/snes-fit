@@ -115,7 +115,7 @@ Used by snes-fit to grade audits:
 | **cosmetic** | Style / consistency only | Allowed freely |
 
 **Ship-ready decay rule:** skill ships only when it hits
-**≤1 cosmetic + 0 structural/major findings for 2 consecutive audit rounds.**
+**≤1 cosmetic + 0 critical/major findings for 2 consecutive audit rounds.**
 Each round = one audit pass with fixes in between. Enforced by
 `scripts/lib/decay_tracker.py`. No bypass.
 

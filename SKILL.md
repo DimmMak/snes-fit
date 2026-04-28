@@ -34,9 +34,48 @@ unix_contract:
 
 # .snes-fit — Fleet-Wide QA Skill
 
-Runs 8 pure-Python dimensions against any skill in the fleet. Binary PASS/FAIL/UNKNOWN verdicts; aggregated into a letter grade; ship gated by the decay stopping rule (2 consecutive rounds of ≤1 cosmetic + 0 structural findings).
+## Purpose
+
+Runs 8 pure-Python dimensions against any skill in the fleet. Binary PASS/FAIL/UNKNOWN verdicts; aggregated into a letter grade; ship gated by the decay stopping rule (≤1 cosmetic + 0 structural/major findings for 2 consecutive rounds).
 
 Phase 1 is stdlib-only. No Claude API key required. Phase 2 adds LLM-backed dimensions (executor + judge).
+
+snes-fit is the structural-conformance auditor of the fleet — it grades skills against `SPEC.md`. Use `.forensic` for editorial / quality critique on artifacts; use snes-fit for spec-compliance.
+
+## When to trigger
+
+Fires when the user invokes any of:
+- `.snes-fit audit --skill <name>` / `.snes-fit audit --all`
+- `.snes-fit design-audit --skill <name>`
+- `.snes-fit create --skill <name>` / `.snes-fit improve` / `.snes-fit benchmark`
+- Natural-language phrasings: "snes-fit this", "audit skill X for spec compliance", "run the fleet QA on X", "score skill X", "grade skill X against spec", "is X ship-ready?", "check fleet conformance"
+- Any request to verify a skill's frontmatter, required sections, forbidden patterns, or canonical subdirectories against SPEC.md
+- Self-audit: `.snes-fit audit --skill snes-fit` (the auditor must audit itself; see `dimensions/00_self/`)
+
+## When NOT to trigger
+
+- **Editorial / logical / quality critique on an artifact** — that's `.forensic`. snes-fit is structural; forensic is mechanism-and-quote.
+- **Creating a new skill from scratch** — that's `snes-builder`. snes-fit grades; it does not author.
+- **Running a skill** — that's the skill itself. snes-fit is a meta-tool; calling it does not invoke the audited skill.
+- **Continuous background monitoring** — use `scheduled-tasks` to trigger snes-fit on a cadence; snes-fit itself is one-shot.
+- **Cross-skill code execution / orchestration** — that's `mewtwo`. snes-fit reads source files; it does not run them.
+- **Live model comparisons or A/B prompt evaluation** — out of scope (NON_GOALS.md #6).
+
+## Anti-patterns
+
+- **Audit drift** — running snes-fit, finding zero issues, declaring victory. The decay rule requires **2 consecutive zero-finding rounds**, not one. Single-pass green is not ship-ready.
+- **Self-audit skip** — auditing every skill except snes-fit itself. If the auditor doesn't pass its own bar, every grade it emits is suspect. Run `audit --skill snes-fit` before any fleet sweep.
+- **Severity inflation** — tagging every minor finding as "critical" to force attention. Severity tiers are critical / major / minor / cosmetic per SPEC.md:108-115. Do not invent tiers.
+- **Score gaming** — exempting unfavorable findings via private skip-list. SPEC.md is the single source of truth; any exemption must be a SPEC.md edit + version bump, not a config-file workaround.
+- **Compatibility theater** — claiming "Anthropic skill-creator eval schemas" compatibility without a pinned schema version + test. Pin the version; commit the test.
+- **Composability claim without bilateral check** — declaring `composable_with: mewtwo` in frontmatter without verifying mewtwo's contract accepts snes-fit as a caller. Mewtwo refuses skills lacking contract declarations.
+
+## Exit conditions
+
+- **Audit complete** — scorecard emitted to `reports/<date>-<skill>.md`, findings to `vault/<skill>/findings.jsonl`, decay state updated. Skill done for this round.
+- **Decay rule satisfied** — 2 consecutive rounds with ≤1 cosmetic + 0 structural/major. Ship gate opens. Skill done.
+- **Critical finding** — block the round, surface to user, exit. Critical = broken or dangerous (per SPEC.md:111). Cannot ship past critical.
+- **Self-audit failure** — if `audit --skill snes-fit` produces critical findings, snes-fit refuses to fleet-sweep until self-audit clears. The auditor must clear its own bar first.
 
 ---
 

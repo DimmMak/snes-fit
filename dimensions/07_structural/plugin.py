@@ -16,7 +16,8 @@ from dimensions._plugin_base import DimensionPlugin, Finding
 
 
 CANONICAL_SUBDIRS = {"scripts", "config", "prompts", "tests", "logs",
-                     "dimensions", "evals", "vault", "reports", "data"}
+                     "dimensions", "evals", "vault", "reports", "data",
+                     "audits", "notes", "skills"}
 
 MAX_DEPTH = 5
 

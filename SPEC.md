@@ -71,9 +71,12 @@ Top-level dirs inside a skill folder. Unknown dirs are flagged **cosmetic**.
 ```
 scripts/    config/    prompts/    tests/    logs/
 dimensions/ evals/     vault/      reports/  data/
+audits/     notes/     skills/
 ```
 
 Dirs prefixed with `_` (e.g., `_archive`) are allowed without flag.
+
+**`audits/` added 2026-04-28** — fleet-wide forensic audits produced this dir on 4 skills (mewtwo, forensic, royal-rumble, snes-fit). Pattern is general enough to canonicalize. **`notes/` and `skills/`** added at the same time — royal-rumble has both legitimately (notes/rumble-log.md, skills/RUMBLE-ENGINE.md).
 
 ---
 

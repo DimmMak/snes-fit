@@ -24,7 +24,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = ap.parse_args(argv)
 
     skip = {s.strip() for s in args.skip.split(",") if s.strip()}
-    skip.add("snes-fit")  # do not recursively audit self by default
+    # NOTE (2026-04-28 — forensic CRIT #2 followup): the previous version of
+    # this file added `skip.add("snes-fit")` here, hard-coding a self-skip in
+    # the fleet sweep. That contradicted the dim 00_self design (snes-fit
+    # auditing itself) and re-introduced the audit-the-auditor blind spot.
+    # snes-fit is now included in the sweep by default. To skip it explicitly,
+    # pass `--skip snes-fit`.
 
     skills = [s for s in tree_walker.discover_skills(args.fleet_root) if s.has_skill_md]
     sys.stdout.write("# .snes-fit fleet sweep\n\n")
@@ -32,7 +37,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     sys.stdout.write("| 🟣 Skill | 🟣 Score | 🟣 Grade | 🟣 Ship-ready |\n")
     sys.stdout.write("|---|---|---|---|\n")
     summary: List[dict] = []
-    for s in skills:
+
+    # Run snes-fit FIRST so a self-audit failure can abort the sweep before
+    # we audit anything else. If the auditor doesn't pass its own bar, every
+    # downstream grade is suspect.
+    skills_sorted = sorted(skills, key=lambda s: (0 if s.name == "snes-fit" else 1, s.name))
+
+    for s in skills_sorted:
         if s.name in skip:
             continue
         try:

@@ -146,4 +146,17 @@ When a snes-fit dimension adds/removes a rule:
 
 - Does NOT enforce semantic quality (e.g., "is this skill useful?") — that's a human judgment
 - Does NOT define test coverage thresholds (future work)
-- Does NOT cover LLM-eval dimensions (09-14) — those are phase 2, documented separately
+- Does NOT cover LLM-eval dimensions (09-14) — those are phase 2; spec lives at `dimensions/<NN_name>/README.md` per dimension (e.g., `dimensions/09_llm_output_quality/README.md`). No central phase-2 spec file exists yet — when phase 2 lands, add `SPEC_PHASE2.md` or extend this file.
+
+## Anthropic skill-creator compatibility (clarified 2026-04-28 per MED #3)
+
+The `snes-fit:create` subcommand emits `evals/<skill>/evals.json` intended to be Anthropic skill-creator-compatible.
+
+**Pinned schema:** Anthropic skill-creator eval schema as documented at the time of the v0.1 ship (2026-04). No formal version pin exists upstream; if/when Anthropic publishes a versioned schema, snes-fit should pin to a specific version and add a compatibility test in `tests/test_evals_schema.py`.
+
+**Current verification state:** the compatibility claim is unverified at v0.1. A `tests/test_evals_schema.py` should:
+1. Generate `evals/<sample-skill>/evals.json` via `snes-fit:create`
+2. Parse against a pinned schema fixture
+3. Fail loudly on schema drift
+
+Until that test ships, the compatibility claim is asserted, not measured. Treat as design intent, not contract.

@@ -13,7 +13,7 @@ What this skill will **never** do. Each entry is a structural commitment, not a 
 | 7 | No replacement of pytest | We COMPOSE pytest (and unittest); we do not reimplement it |
 | 8 | No per-user accounts | No auth, no sessions, no roles |
 | 9 | No score below 0 or above 100 | Grade is clamped; overflow is a bug, not a feature |
-| 10 | No bypass of decay rule | Ship gate is enforced in code, not in policy |
+| 10 | No bypass of decay rule | Ship gate is enforced in code, not in policy. **"Ship" defined (2026-04-28 per MED #1):** symlinking the skill at `~/.claude/skills/<name>` (making it harness-discoverable) — that's the ship action snes-fit gates. The gate fires at symlink time, not at git-push time. Skill repos can be pushed at any commit; the harness only sees skills that are symlinked. |
 | 11 | No external network calls in phase 1 | Stdlib only; reproducible offline |
 | 12 | No YAML / pickle / binary formats for state | JSON + JSONL + markdown only — human-readable forever |
 | 13 | No modification of the skill being audited | Read-only probes; writes confined to `vault/` and `reports/` |

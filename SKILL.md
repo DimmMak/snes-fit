@@ -1,7 +1,7 @@
 ---
 name: snes-fit
 domain: general
-version: 0.1.0
+version: 0.2.2
 description: >
   Fleet-wide QA skill that audits any other skill against structural, adversarial, scale, composition, security, threat-intel, type, and design dimensions. Plugin architecture lets you add dimensions as separate dirs — no core code changes. Ship only when decay rule hits 2 consecutive zero-finding rounds. Compatible with Anthropic skill-creator eval schemas. NOT for: creating new skills (use snes-builder). NOT for: running skills (use the skill directly). NOT for: continuous background monitoring (use scheduled-tasks).
 capabilities:

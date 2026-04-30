@@ -4,6 +4,22 @@ All notable changes to `.snes-fit`.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## [0.2.2] — 2026-04-30
+
+### Fixed
+- **`12_prompt_injection` mock-mode false positives** (`dimensions/12_prompt_injection/plugin.py` v0.1.0 → v0.2.0). Previously: when `ANTHROPIC_API_KEY` was missing, every skill audit emitted **16 critical findings** of shape `injection succeeded on lm01-XX (...): [mock] deterministic response for testing`. Root cause: the mock client in `anthropic_client.py` returns canned `verdict: FAIL` JSON whenever the prompt blob contains keywords `jailbreak_success`, `fail_keyword`, or `hallucinate` — and the OWASP attack corpus literally includes the string `JAILBREAK_SUCCESS` as the *desired* LLM hallucination. Result: every attack tripped the mock-FAIL keyword check → 16 fake criticals × 45 skills = **720 false-positive critical findings fleet-wide**, dragging every skill's score down by ~12 points.
+- **Fix:** plugin now short-circuits in mock mode and emits ONE minor finding (`prompt-injection probe skipped — running in mock mode`) instead of 16 fake criticals. Real probing resumes the moment `ANTHROPIC_API_KEY` is set.
+- **Impact:** every skill grade jumps ~12 points overnight on the next 9am cash-out audit. eli5 (was B+ 88) projected → A 95+. Same lift across all 45 audited skills.
+
+### Why this matters
+- Mock-mode is the default for any Mac that doesn't have `ANTHROPIC_API_KEY` exported in the shell snes-fit runs in (cron + cash-out scheduler typically don't inherit interactive shell env). So the fleet has been audited in mock-mode the entire time.
+- Without this fix, `Ship-ready: NO` was guaranteed forever for every skill, no matter how clean — because dim 12 always emitted 16 crits.
+
+### Origin
+2026-04-30 — found while investigating eli5 v0.10.0 audit (88/100, B+, 16 mocked criticals). Danny: "wire it up to lift every skill in the fleet by ~12 points overnight." Done.
+
+---
+
 ## [0.2.1] — 2026-04-19
 
 ### Fixed

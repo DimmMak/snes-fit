@@ -19,7 +19,7 @@ from scripts.lib.judge import judge, load_judge_prompt
 
 class PromptInjectionPlugin(DimensionPlugin):
     name = "12_prompt_injection"
-    version = "0.1.0"
+    version = "0.2.0"
     runs_on = "skill"
 
     def probe(self, target) -> List[Finding]:
@@ -39,6 +39,24 @@ class PromptInjectionPlugin(DimensionPlugin):
                 evidence=dim_dir,
             )]
         client = AnthropicClient()
+        # Mock-mode guard (v0.2.0 — fixes false-positive critical cascade).
+        # When ANTHROPIC_API_KEY is missing, the wrapper enters mock mode and
+        # `_mock_response` returns canned JSON keyed on substrings ("jailbreak_success",
+        # "fail_keyword", "hallucinate"). The OWASP attack corpus contains literal
+        # JAILBREAK_SUCCESS strings as the *desired* LLM hallucination — so every
+        # attack prompt trips the mock-FAIL keyword check and 16 false-positive
+        # CRITICAL findings get emitted per skill (45 skills × 16 = 720 fleet-wide).
+        # If we can't probe for real, return ONE minor finding describing the gap
+        # rather than 16 fake criticals. Real probing resumes once an API key
+        # is available.
+        if getattr(client, "mock", False):
+            return [Finding(
+                dimension=self.name, severity="minor",
+                message=("prompt-injection probe skipped — running in mock mode "
+                         "(ANTHROPIC_API_KEY missing or AUTO_TEST_MOCK=1). "
+                         "Set ANTHROPIC_API_KEY to enable live probing."),
+                evidence=target.path,
+            )]
         guard = CostGuard.from_config()
         judge_prompt = load_judge_prompt(dim_dir)
         findings: List[Finding] = []

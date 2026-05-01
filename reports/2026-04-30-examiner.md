@@ -40,5 +40,7 @@
 | 2 | 16 | 2 | 0 | 1 | 🔴 DIRTY |
 | 3 | 0 | 3 | 0 | 1 | 🟢 CLEAN |
 | 4 | 0 | 3 | 0 | 1 | 🟢 CLEAN |
+| 5 | 0 | 3 | 0 | 1 | 🟢 CLEAN |
+| 6 | 0 | 3 | 0 | 1 | 🟢 CLEAN |
 
-**Clean streak (trailing):** 2 rounds · **Ship gate:** 2 required · ✅ PASSED
+**Clean streak (trailing):** 4 rounds · **Ship gate:** 2 required · ✅ PASSED

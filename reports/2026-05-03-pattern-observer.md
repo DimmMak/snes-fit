@@ -58,5 +58,6 @@
 | 18 | 0 | 5 | 0 | 1 | 🟢 CLEAN |
 | 19 | 0 | 5 | 0 | 1 | 🟢 CLEAN |
 | 20 | 0 | 5 | 0 | 1 | 🟢 CLEAN |
+| 21 | 0 | 5 | 0 | 1 | 🟢 CLEAN |
 
-**Clean streak (trailing):** 8 rounds · **Ship gate:** 2 required · ✅ PASSED
+**Clean streak (trailing):** 9 rounds · **Ship gate:** 2 required · ✅ PASSED

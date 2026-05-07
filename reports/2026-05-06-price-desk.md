@@ -78,5 +78,6 @@
 | 28 | 2 | 8 | 0 | 1 | 🔴 DIRTY |
 | 29 | 2 | 8 | 0 | 1 | 🔴 DIRTY |
 | 30 | 2 | 8 | 0 | 1 | 🔴 DIRTY |
+| 31 | 2 | 8 | 0 | 1 | 🔴 DIRTY |
 
 **Clean streak (trailing):** 0 rounds · **Ship gate:** 2 required · ⏳ IN PROGRESS

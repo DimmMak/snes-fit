@@ -1,7 +1,7 @@
 # .snes-fit scorecard — tripwire-desk
 
 **Overall score:** 99/100  |  **Grade:** A+
-**Ship-ready (decay rule):** NO
+**Ship-ready (decay rule):** YES
 
 ## Per-dimension results
 
@@ -42,5 +42,6 @@
 | 🟣 Round | 🟣 Structural | 🟣 Minor | 🟣 Cosmetic | 🟣 Markers | 🟣 Verdict |
 |---|---|---|---|---|---|
 | 1 | 0 | 2 | 1 | 1 | 🟢 CLEAN |
+| 2 | 0 | 2 | 1 | 1 | 🟢 CLEAN |
 
-**Clean streak (trailing):** 1 round · **Ship gate:** 2 required · ⏳ IN PROGRESS
+**Clean streak (trailing):** 2 rounds · **Ship gate:** 2 required · ✅ PASSED
